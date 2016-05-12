@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
+  <title>Scroller | 耗子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;emsp;&amp;emsp;Scroller是一个帮助View滚动的辅助类，在使用它之前，用户需要通过startScroll来设置滚动的参数，即起始点坐标和（x,y）轴上要滚动的距离。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scroller">
+<meta property="og:url" content="http://yoursite.com/2016/05/03/android-scroller/index.html">
+<meta property="og:site_name" content="耗子">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;Scroller是一个帮助View滚动的辅助类，在使用它之前，用户需要通过startScroll来设置滚动的参数，即起始点坐标和（x,y）轴上要滚动的距离。">
+<meta property="og:updated_time" content="2016-05-12T07:11:25.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scroller">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;Scroller是一个帮助View滚动的辅助类，在使用它之前，用户需要通过startScroll来设置滚动的参数，即起始点坐标和（x,y）轴上要滚动的距离。">
+  
+    <link rel="alternative" href="/atom.xml" title="耗子" type="application/atom+xml">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <nav id="upper-nav" class="inner">
+      <a id="main-nav-toggle" class="nav-icon"></a>
+      <div class="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        
+          <a id="nav-github" class="nav-icon" href="https://github.com/myname"></a>
+        
+      </div>
+    </nav>
+    <div id="header-title">
+      
+        <h1 id="blog-title-wrap">
+          <a href="/" id="blog-title">耗子の博客</a>
+        </h1>
+      
+    </div>
+    <div id="contenedor">
+      <ul class="cube">
+        <li class="cara">MyLogo</li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+      </ul>
+    </div>
+    <nav id="main-nav">
+      
+        <a class="main-nav-link" href="/">Home</a>
+      
+        <a class="main-nav-link" href="/archives">Archives</a>
+      
+        <a class="main-nav-link" href="/about">About</a>
+      
+      <a class="main-nav-link st-search-show-outputs">Search</a>
+    </nav>
+  </div>
+</header>
+
+    <div class="outer">
+      <section id="main"><article id="post-android-scroller" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <h3 href="/2016/05/03/android-scroller/" class="article-date">
+  <time datetime="2016-05-03T07:29:13.000Z" itemprop="datePublished">2016-05-03</time>
+</h3>
+    
+  </div>
+  <div class="article-inner">
+  <div class="curve-down">
+  <div class="fill-content">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Scroller
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        <p>&emsp;&emsp;Scroller是一个帮助View滚动的辅助类，在使用它之前，用户需要通过startScroll来设置滚动的参数，即起始点坐标和（x,y）轴上要滚动的距离。<br><a id="more"></a></p>
+<h2 id="1-Scroller"><a href="#1-Scroller" class="headerlink" title="1.Scroller"></a>1.Scroller</h2><p>&emsp;&emsp;Scroller它封装了滚动时间、要滚动的目标x轴和y轴，以及在每个时间内View应该滚动到的（x,y）轴的坐标点，这样用户就可以在有效的滚动周期内通过Scroller的getCurX()和getCurY()来获取当前时刻View应该滚动的位置，然后通过调用View的scrollTo或者ScrollBy方法进行滚动。那么如何判断滚动是否结束呢？ 我们只需要覆写View类的computeScroll方法，该方法会在View绘制时被调用，在里面调用Scroller的computeScrollOffset来判断滚动是否完成，如果返回true表明滚动未完成，否则滚动完成。上述说的scrollTo或者ScrollBy的调用就是在computeScrollOffset为true的情况下调用，并且最后还要调用目标View的postInvalidate()或者invalidate()以实现View的重绘。View的重绘又会导致computeScroll方法被调用，从而继续整个滚动过程，直至computeScrollOffset返回false， 即滚动结束。整个过程有点绕。</p>
+<p>我们看一个实例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class ScrollLayout extends FrameLayout &#123;</span><br><span class="line">    private String TAG = ScrollLayout.class.getSimpleName();</span><br><span class="line">    Scroller mScroller ;</span><br><span class="line"></span><br><span class="line">    public ScrollLayout(Context context) &#123;</span><br><span class="line">        super(context);</span><br><span class="line">        mScroller = new Scroller(context) ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 该函数会在View重绘之时被调用</span><br><span class="line">    @Override</span><br><span class="line">    public void <span class="function"><span class="title">computeScroll</span></span>() &#123;</span><br><span class="line">        <span class="keyword">if</span> ( mScroller.computeScrollOffset() ) &#123;</span><br><span class="line">            // 滚动到此,View应该滚动到的x,y坐标上</span><br><span class="line">            this.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());</span><br><span class="line">            // 请求重绘该View，从而又会导致computeScroll被调用，然后继续滚动，</span><br><span class="line">            // 直到computeScrollOffset返回<span class="literal">false</span></span><br><span class="line">          this.postInvalidate();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 调用这个方法进行滚动，这里我们只滚动竖直方向</span><br><span class="line">    public void scrollTo(int y) &#123;</span><br><span class="line">          // 参数1和参数2分别为滚动的起始点水平、竖直方向的滚动偏移量</span><br><span class="line">          // 参数3和参数4为在水平和竖直方向上滚动的距离</span><br><span class="line">          mScroller.startScroll(getScrollX(), getScrollY(), 0, y);</span><br><span class="line">          this.invalidate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>滚动该视图的代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ScrollLayout scrollView = new ScrollLayout(getContext()) ;</span><br><span class="line">       scrollView.scrollTo(100);</span><br></pre></td></tr></table></figure>
+<p>通过上面这段代码会让scrollView在y轴上向下滚动100个像素点。我们结合代码来分析一下。首先调用scrollTo(inty)方法<strong>，然后在该方法中通过mScroller.startScroll()方法来设置滚动的参数，再调用invalidate()方法使得该View重绘。重绘时会调用computeScroll方法，</strong>在该方法中通过mScroller.computeScrollOffset()判断滚动是否完成，如果返回true，代表没有滚动完成，此时把该View滚动到此刻View应该滚动到的x、 y位置，这个位置通过mScroller的getCurrX和 getCurrY获得。然后继续调用重绘方法，继续执行滚动过程，直至滚动完成。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <div class="article-footer-content">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a></li></ul>
+
+        <a data-url="http://yoursite.com/2016/05/03/android-scroller/" data-id="cio40p41t0004i4trpoth8hjq" class="article-share-link">Share</a>
+        
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/09/android-CursorLoader/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android Loader解析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/25/git学习5/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Git基础学习(5)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+<section id="comments">
+    <!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="post-android-scroller" data-title="Scroller" data-url="http://yoursite.com/2016/05/03/android-scroller/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"lewisliul"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</section>
+
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/12/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/androidstudio/">androidstudio神器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/android-oom/">Android OOM解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/09/android-CursorLoader/">Android Loader解析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-optimization-oom/">android_optimization_oom</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-tool-as/">android_tool_as</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 lewisliul<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+  <a href="#search" class="mobile-nav-link st-search-show-outputs">Search</a>
+</nav>
+  <!-- totop start -->
+<div id="totop">
+	<a title="To Top"></a>
+</div>
+<!-- totop end -->
+<!-- swiftype search start -->
+
+<!-- swiftype search end -->
+
+
+<!-- duoshuo start -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"lewisliul"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- duoshuo end -->
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="//cdn.bootcss.com/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+</div>
+</body>
+</html>

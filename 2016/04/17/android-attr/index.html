@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
+  <title>Android深入理解自定义属性 | 耗子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;emsp;&amp;emsp; 对于自定义属性，大家肯定都不陌生，遵循以下几步，就可以实现：
+
+自定义一个CustomView(extends View )类
+编写values/attrs.xml，在其中编写styleable和item等标签元素
+在布局文件中CustomView使用自定义的属性（注意namespace）
+在CustomView的构造方法中通过TypedArray获取">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android深入理解自定义属性">
+<meta property="og:url" content="http://yoursite.com/2016/04/17/android-attr/index.html">
+<meta property="og:site_name" content="耗子">
+<meta property="og:description" content="&amp;emsp;&amp;emsp; 对于自定义属性，大家肯定都不陌生，遵循以下几步，就可以实现：
+
+自定义一个CustomView(extends View )类
+编写values/attrs.xml，在其中编写styleable和item等标签元素
+在布局文件中CustomView使用自定义的属性（注意namespace）
+在CustomView的构造方法中通过TypedArray获取">
+<meta property="og:updated_time" content="2016-05-12T07:11:25.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android深入理解自定义属性">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp; 对于自定义属性，大家肯定都不陌生，遵循以下几步，就可以实现：
+
+自定义一个CustomView(extends View )类
+编写values/attrs.xml，在其中编写styleable和item等标签元素
+在布局文件中CustomView使用自定义的属性（注意namespace）
+在CustomView的构造方法中通过TypedArray获取">
+  
+    <link rel="alternative" href="/atom.xml" title="耗子" type="application/atom+xml">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <nav id="upper-nav" class="inner">
+      <a id="main-nav-toggle" class="nav-icon"></a>
+      <div class="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        
+          <a id="nav-github" class="nav-icon" href="https://github.com/myname"></a>
+        
+      </div>
+    </nav>
+    <div id="header-title">
+      
+        <h1 id="blog-title-wrap">
+          <a href="/" id="blog-title">耗子の博客</a>
+        </h1>
+      
+    </div>
+    <div id="contenedor">
+      <ul class="cube">
+        <li class="cara">MyLogo</li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+      </ul>
+    </div>
+    <nav id="main-nav">
+      
+        <a class="main-nav-link" href="/">Home</a>
+      
+        <a class="main-nav-link" href="/archives">Archives</a>
+      
+        <a class="main-nav-link" href="/about">About</a>
+      
+      <a class="main-nav-link st-search-show-outputs">Search</a>
+    </nav>
+  </div>
+</header>
+
+    <div class="outer">
+      <section id="main"><article id="post-android-attr" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <h3 href="/2016/04/17/android-attr/" class="article-date">
+  <time datetime="2016-04-17T11:42:00.000Z" itemprop="datePublished">2016-04-17</time>
+</h3>
+    
+  </div>
+  <div class="article-inner">
+  <div class="curve-down">
+  <div class="fill-content">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android深入理解自定义属性
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        <p>&emsp;&emsp; 对于自定义属性，大家肯定都不陌生，遵循以下几步，就可以实现：</p>
+<ol>
+<li>自定义一个CustomView(extends View )类</li>
+<li>编写values/attrs.xml，在其中编写styleable和item等标签元素</li>
+<li>在布局文件中CustomView使用自定义的属性（注意namespace）</li>
+<li>在CustomView的构造方法中通过TypedArray获取<a id="more"></a> 
+<h3 id="1-基本的举例"><a href="#1-基本的举例" class="headerlink" title="1.基本的举例"></a>1.基本的举例</h3></li>
+</ol>
+<ul>
+<li>自定义属性的声明文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;resources&gt;</span><br><span class="line">    &lt;<span class="built_in">declare</span>-styleable name=<span class="string">"test"</span>&gt;</span><br><span class="line">        &lt;attr name=<span class="string">"text"</span> format=<span class="string">"string"</span>/&gt;</span><br><span class="line">        &lt;attr name=<span class="string">"testAttr"</span> format=<span class="string">"integer"</span>/&gt;</span><br><span class="line">    &lt;/<span class="built_in">declare</span>-styleable&gt;</span><br><span class="line">&lt;/resources&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>自定义View类</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class MyTextView extends View &#123;</span><br><span class="line"></span><br><span class="line">    private static final String TAG = MyTextView.class.getSimpleName();</span><br><span class="line"></span><br><span class="line">    public MyTextView(Context context, AttributeSet attrs) &#123;</span><br><span class="line">        super(context, attrs);</span><br><span class="line"></span><br><span class="line">        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.test);</span><br><span class="line"></span><br><span class="line">        String text = ta.getString(R.styleable.test_<span class="built_in">test</span>Attr);</span><br><span class="line">        int textAttr = ta.getInteger(R.styleable.test_text, -1);</span><br><span class="line"></span><br><span class="line">        Log.e(TAG, <span class="string">"text = "</span> + text + <span class="string">" , textAttr = "</span> + textAttr);</span><br><span class="line"></span><br><span class="line">        ta.recycle();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>布局文件中使用</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;RelativeLayout xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    xmlns:tools=<span class="string">"http://schemas.android.com/tools"</span></span><br><span class="line">    xmlns:a=<span class="string">"http://schemas.android.com/apk/res/com.example.test"</span></span><br><span class="line">    android:layout_width=<span class="string">"match_parent"</span></span><br><span class="line">    android:layout_height=<span class="string">"match_parent"</span> &gt;</span><br><span class="line"></span><br><span class="line">    &lt;com.example.test.MyTextView</span><br><span class="line">        android:layout_width=<span class="string">"100dp"</span></span><br><span class="line">        android:layout_height=<span class="string">"200dp"</span></span><br><span class="line">        a:<span class="built_in">test</span>Attr=<span class="string">"520"</span></span><br><span class="line">        a:text=<span class="string">"helloworld"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/RelativeLayout&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-AttributeSet与TypedArray"><a href="#2-AttributeSet与TypedArray" class="headerlink" title="2.AttributeSet与TypedArray"></a>2.AttributeSet与TypedArray</h3><p>构造方法中的有个参数叫做AttributeSet（eg: MyTextView(Context context, AttributeSet attrs) ）这个参数看名字就知道包含的是参数的集合，那么我能不能通过它去获取我的自定义属性呢？</p>
+<p>恩，没错，通过AttributeSet可以获得布局文件中定义的所有属性的key和value（还有一些方法，自己去尝试），那么是不是说TypedArray这个鬼可以抛弃了呢？答案是：NO!</p>
+<p><strong>那么TypedArray是什么鬼？</strong></p>
+<p>通过AttributeSet获取的值，如果是引用都变成了“<strong>@+数字</strong>”的字符串。TypedArray其实是用来简化我们的工作的，比如如果布局中的属性的值是引用类型（比如：@dimen/dp100），如果使用AttributeSet去获得最终的像素值，那么需要第一步拿到id，第二步再去解析id。而TypedArray正是帮我们简化了这个过程。</p>
+<h3 id="3-declare-styleable"><a href="#3-declare-styleable" class="headerlink" title="3.declare-styleable"></a>3.declare-styleable</h3><p>首先删除declare-styleable的标签，那么现在的attrs.xml为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;resources&gt;</span><br><span class="line">    &lt;attr name=<span class="string">"testAttr"</span> format=<span class="string">"integer"</span> /&gt;</span><br><span class="line">&lt;/resources&gt;</span><br></pre></td></tr></table></figure>
+<p>MyTextView实现：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class MyTextView extends View &#123;</span><br><span class="line"></span><br><span class="line">    private static final String TAG = MyTextView.class.getSimpleName();</span><br><span class="line"></span><br><span class="line">    private static final int[] mAttr = &#123; android.R.attr.text, R.attr.testAttr &#125;;</span><br><span class="line">    private static final int ATTR_ANDROID_TEXT = 0;</span><br><span class="line">    private static final int ATTR_TESTATTR = 1;</span><br><span class="line"></span><br><span class="line">    public MyTextView(Context context, AttributeSet attrs) &#123;</span><br><span class="line">        super(context, attrs);</span><br><span class="line"></span><br><span class="line">        // ==&gt;use typedarray</span><br><span class="line">        TypedArray ta = context.obtainStyledAttributes(attrs, mAttr);</span><br><span class="line"></span><br><span class="line">        String text = ta.getString(ATTR_ANDROID_TEXT);</span><br><span class="line">        int textAttr = ta.getInteger(ATTR_TESTATTR, -1);</span><br><span class="line">        //输出 text = Hello world! , textAttr = 520</span><br><span class="line">        Log.e(TAG, <span class="string">"text = "</span> + text + <span class="string">" , textAttr = "</span> + textAttr);</span><br><span class="line"></span><br><span class="line">        ta.recycle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>貌似多了些代码，可以看到我们声明了一个int数组，数组中的元素就是我们想要获取的attr的id。并且我们根据元素的在数组中的位置，定义了一些整形的常量代表其下标，然后通过TypedArray进行获取。 </p>
+<p>可以看到，我们原本的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">R.styleable.test =&gt; mAttr</span><br><span class="line">R.styleable.test_text =&gt; ATTR_ANDROID_TEXT(0)</span><br><span class="line">R.styleable.test_<span class="built_in">test</span>Attr =&gt; ATTR_TESTATTR(1)</span><br></pre></td></tr></table></figure>
+<p>styleale的出现系统可以为我们完成很多常量（int[]数组，下标常量）等的编写，简化我们的开发工作（想想如果一堆属性，自己编写常量，你得写成什么样的代码）。那么大家肯定还知道declare-styleable的name属性，一般情况下写的都是我们自定义View的类名。主要为了直观的表达，该declare-styleable的属性，都是改View所用的。</p>
+<p><strong>总结：</strong></p>
+<ol>
+<li>attrs.xml里面的declare-styleable以及item，android会根据其在R.java中生成一些常量方便我们使用(aapt干的)，本质上，我们可以不声明declare-styleable仅仅声明所需的属性即可。</li>
+<li>我们在View的构造方法中，可以通过AttributeSet去获得自定义属性的值，但是比较麻烦，而TypedArray可以很方便的便于我们去获取。</li>
+<li>我们在自定义View的时候，可以使用系统已经定义的属性。例如：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="built_in">declare</span>-styleable name=<span class="string">"test"</span>&gt;</span><br><span class="line">        &lt;attr name=<span class="string">"android:text"</span> /&gt;</span><br><span class="line">        &lt;attr name=<span class="string">"testAttr"</span> format=<span class="string">"integer"</span> /&gt;</span><br><span class="line">&lt;/<span class="built_in">declare</span>-styleable&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <div class="article-footer-content">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a></li></ul>
+
+        <a data-url="http://yoursite.com/2016/04/17/android-attr/" data-id="cio40p40y0000i4trqevrwf1q" class="article-share-link">Share</a>
+        
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/19/git学习3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Git基础学习(3)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/16/git学习2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Git基础学习(2)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+<section id="comments">
+    <!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="post-android-attr" data-title="Android深入理解自定义属性" data-url="http://yoursite.com/2016/04/17/android-attr/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"lewisliul"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</section>
+
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/12/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/androidstudio/">androidstudio神器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/android-oom/">Android OOM解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/09/android-CursorLoader/">Android Loader解析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-optimization-oom/">android_optimization_oom</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-tool-as/">android_tool_as</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 lewisliul<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+  <a href="#search" class="mobile-nav-link st-search-show-outputs">Search</a>
+</nav>
+  <!-- totop start -->
+<div id="totop">
+	<a title="To Top"></a>
+</div>
+<!-- totop end -->
+<!-- swiftype search start -->
+
+<!-- swiftype search end -->
+
+
+<!-- duoshuo start -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"lewisliul"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- duoshuo end -->
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="//cdn.bootcss.com/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
+  <title>Git基础学习(4) | 耗子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;emsp;&amp;emsp;此节讲解标签的创建和管理，使用GPG工具进行标签的加密处理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git基础学习(4)">
+<meta property="og:url" content="http://yoursite.com/2016/04/24/git学习4/index.html">
+<meta property="og:site_name" content="耗子">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;此节讲解标签的创建和管理，使用GPG工具进行标签的加密处理。">
+<meta property="og:image" content="http://yoursite.com/images/git_5.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.2.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.3.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.4.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.5.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.5.jpg">
+<meta property="og:image" content="http://yoursite.com/images/git_5.6.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.7.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.8.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.9.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.10.png">
+<meta property="og:image" content="http://yoursite.com/images/git_5.11.png">
+<meta property="og:updated_time" content="2016-05-12T07:11:25.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git基础学习(4)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;此节讲解标签的创建和管理，使用GPG工具进行标签的加密处理。">
+<meta name="twitter:image" content="http://yoursite.com/images/git_5.1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="耗子" type="application/atom+xml">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <nav id="upper-nav" class="inner">
+      <a id="main-nav-toggle" class="nav-icon"></a>
+      <div class="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        
+          <a id="nav-github" class="nav-icon" href="https://github.com/myname"></a>
+        
+      </div>
+    </nav>
+    <div id="header-title">
+      
+        <h1 id="blog-title-wrap">
+          <a href="/" id="blog-title">耗子の博客</a>
+        </h1>
+      
+    </div>
+    <div id="contenedor">
+      <ul class="cube">
+        <li class="cara">MyLogo</li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+      </ul>
+    </div>
+    <nav id="main-nav">
+      
+        <a class="main-nav-link" href="/">Home</a>
+      
+        <a class="main-nav-link" href="/archives">Archives</a>
+      
+        <a class="main-nav-link" href="/about">About</a>
+      
+      <a class="main-nav-link st-search-show-outputs">Search</a>
+    </nav>
+  </div>
+</header>
+
+    <div class="outer">
+      <section id="main"><article id="post-git学习4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <h3 href="/2016/04/24/git学习4/" class="article-date">
+  <time datetime="2016-04-24T09:03:52.000Z" itemprop="datePublished">2016-04-24</time>
+</h3>
+    
+  </div>
+  <div class="article-inner">
+  <div class="curve-down">
+  <div class="fill-content">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Git基础学习(4)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        <p>&emsp;&emsp;此节讲解标签的创建和管理，使用GPG工具进行标签的加密处理。<br><a id="more"></a></p>
+<h2 id="5-git标签管理"><a href="#5-git标签管理" class="headerlink" title="5 git标签管理"></a>5 git标签管理</h2><p>&emsp;&emsp;标签可以简单的理解为属于分支定义的别名，分支本身都会进行指针的配置（分支都会指向某一个commit id），但是标签却是一个固定的内容，可以说标签永远指向一个固定的commit id。</p>
+<h2 id="5-1-创建标签"><a href="#5-1-创建标签" class="headerlink" title="5.1 创建标签"></a>5.1 创建标签</h2><p><img src="/images/git_5.1.png" alt="1"> </p>
+<p>现在假如存在2个分支。</p>
+<p><strong>范例：</strong>为master定义一个标签.</p>
+<ul>
+<li>master是程序最终的发布版本，可以说，master就是完整的开发程序。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag v1.0</span><br></pre></td></tr></table></figure>
+<p><strong>范例：</strong>查看所有标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag</span><br></pre></td></tr></table></figure>
+<p>这个标签只是针对当前master分支打上的标签，可是在一个项目中一定会有许多的提交点，那么如果要为之前的提交点打上标签该怎么做呢？只需要找到commit id就可以。</p>
+<p><strong>范例：</strong>查看日志.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=oneline--abbrev-commit</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.2.png" alt="2"> </p>
+<p>在这些的日志上都存在commitid，针对一个commit id进行标签的定义。</p>
+<p><strong>范例：</strong>设定标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag v0.6 9052a56</span><br></pre></td></tr></table></figure>
+<p>此时的标签只是显示一些很简单的标签信息并不是很好的，所以下面希望可以查看标签的完整内容。</p>
+<p><strong>范例：</strong>查看标签的完整信息.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show v0.6</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.3.png" alt="3"> </p>
+<p>在之前的标签都没注释信息，那么如何设置注释信息呢？</p>
+<p><strong>范例：</strong>添加标签时设置注释.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag <span class="_">-a</span> v0.7 -m <span class="string">"relese version"</span> id</span><br></pre></td></tr></table></figure>
+<p>随后再次查询标签的详细信息。</p>
+<p><strong>范例：</strong>添加标签时设置注释.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show v0.7</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.4.png" alt="4"></p>
+<h2 id="5-2-标签加密"><a href="#5-2-标签加密" class="headerlink" title="5.2 标签加密"></a>5.2 标签加密</h2><p>&emsp;&emsp;标签创建完成之后如果开发者只希望可以由自己来修改标签，那么急必须进行标签的加密。可以使用GPG工具实现加密的操作。下载地址如下：</p>
+<p><img src="/images/git_5.5.png" alt="5"></p>
+<p><strong>范例：</strong>测试安装是否成功.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg -help</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.5.jpg" alt="6安装成功"></p>
+<p><strong>使用步骤：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">1.生成自己秘钥</span><br><span class="line">gpg --gen-key</span><br><span class="line"></span><br><span class="line">2.使用RSA算法（默认）</span><br><span class="line">直接回车</span><br><span class="line"></span><br><span class="line">3.秘钥长度，默认的长度是2048位</span><br><span class="line">直接回车</span><br><span class="line"></span><br><span class="line">4.秘钥的有效期，可以选择秘钥永远不过期（0）</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">5.本次输入Y表示确认以上信息。</span><br><span class="line">y</span><br><span class="line"></span><br><span class="line">6.设置个人信息</span><br><span class="line"></span><br><span class="line">7.询问是否进行修改，信息确认过，直接输入OK</span><br><span class="line">o</span><br><span class="line"></span><br><span class="line">8.随后输入提示框，设置私钥的密码，防止有人恶意修改</span><br><span class="line"></span><br><span class="line">9.此时会出现一系列的信息，图7</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.6.png" alt="7"></p>
+<p>以上有几点信息：</p>
+<ul>
+<li>密钥号：</li>
+<li>用户ID：（真实姓名 注释 邮箱）</li>
+</ul>
+<p>实际上为了日后管理方便，最好生成一张撤销的整数，为的是以后如果密钥过期可以通过服务器撤销。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg --gen -revoke id</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.7.png" alt="8"></p>
+<p><img src="/images/git_5.8.png" alt="9"></p>
+<p><img src="/images/git_5.9.png" alt="10"></p>
+<p><img src="/images/git_5.10.png" alt="11"></p>
+<h2 id="5-3-使用GPG生成标签"><a href="#5-3-使用GPG生成标签" class="headerlink" title="5.3 使用GPG生成标签"></a>5.3 使用GPG生成标签</h2><p>要保证在使用之前一定配置好相关GPG工具，现在已经有一个生成的密钥，名称为“<strong><em>*</em></strong>”，所以下面进行加密标签，标签的加密只需要加“-s” 。</p>
+<p><strong>范例：</strong>使用gpg加密标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag <span class="_">-s</span> v0.9 -m <span class="string">"gpg tag"</span> id</span><br></pre></td></tr></table></figure>
+<p>此时并不能进行加密。我们需要在加密时使用一个指定的签名，所以实际上的标签加密处理应该输入如下的指令完成。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag -u <span class="string">"username"</span> <span class="_">-s</span> v0.9 -m <span class="string">"gpg tag"</span> id</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_5.11.png" alt="12"></p>
+<p>此时其他的开发者是不可能修改此标签的。</p>
+<h2 id="5-4-标签的管理"><a href="#5-4-标签的管理" class="headerlink" title="5.4 标签的管理"></a>5.4 标签的管理</h2><p><strong>范例：</strong>删除标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag <span class="_">-d</span> v0.9</span><br></pre></td></tr></table></figure>
+<p>这样至少进行本地标签的删除，而标签也是可以提交到服务器上。</p>
+<p><strong>范例：</strong>提交标签到服务器上.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin v0.6</span><br></pre></td></tr></table></figure>
+<p>推送完成后，可以进行标签的查看。</p>
+<p><strong>范例：</strong>一次性推送多个标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin --tags</span><br></pre></td></tr></table></figure>
+<p>本地未推送的到被提交到服务器上。</p>
+<p><strong>范例：</strong>删除本地标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag <span class="_">-d</span> v0.7</span><br></pre></td></tr></table></figure>
+<p>但是服务器还存在，但是可以删除：</p>
+<p><strong>范例：</strong>删除远程服务器标签.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin :refs/tags/v0.7</span><br></pre></td></tr></table></figure>
+<p>这个时候就可以很好的实现管理。</p>
+<h2 id="5-5-总结"><a href="#5-5-总结" class="headerlink" title="5.5 总结"></a>5.5 总结</h2><p>标签实际上就是起一个别名，有些不喜欢起别名的，那么就按着传统的方式开发，我们可以利用GPG工具建立加密的安全标签。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <div class="article-footer-content">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
+
+        <a data-url="http://yoursite.com/2016/04/24/git学习4/" data-id="cio40p42p000di4trzhzljeek" class="article-share-link">Share</a>
+        
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/25/git学习5/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Git基础学习(5)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/19/git学习3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Git基础学习(3)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+<section id="comments">
+    <!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="post-git学习4" data-title="Git基础学习(4)" data-url="http://yoursite.com/2016/04/24/git学习4/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"lewisliul"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</section>
+
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/12/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/androidstudio/">androidstudio神器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/android-oom/">Android OOM解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/09/android-CursorLoader/">Android Loader解析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-optimization-oom/">android_optimization_oom</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-tool-as/">android_tool_as</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 lewisliul<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+  <a href="#search" class="mobile-nav-link st-search-show-outputs">Search</a>
+</nav>
+  <!-- totop start -->
+<div id="totop">
+	<a title="To Top"></a>
+</div>
+<!-- totop end -->
+<!-- swiftype search start -->
+
+<!-- swiftype search end -->
+
+
+<!-- duoshuo start -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"lewisliul"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- duoshuo end -->
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="//cdn.bootcss.com/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+</div>
+</body>
+</html>

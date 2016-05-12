@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
+  <title>Android Loader解析 | 耗子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;emsp;&amp;emsp;在Android日常开发中，时常会请求数据到Cursor，然后再通过Cursor获取数据。像SQLiteDatabase和ContentProvider都使用了Cursor。在这些应用中，往往希望当数据发生改变时，Cursor也会自动的更新数据。这篇文章，我就会向你阐述如何通过Android自身的API实现Cursor的自动更新。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Loader解析">
+<meta property="og:url" content="http://yoursite.com/2016/05/09/android-CursorLoader/index.html">
+<meta property="og:site_name" content="耗子">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;在Android日常开发中，时常会请求数据到Cursor，然后再通过Cursor获取数据。像SQLiteDatabase和ContentProvider都使用了Cursor。在这些应用中，往往希望当数据发生改变时，Cursor也会自动的更新数据。这篇文章，我就会向你阐述如何通过Android自身的API实现Cursor的自动更新。">
+<meta property="og:image" content="http://yoursite.com/images/cursor_1.png">
+<meta property="og:image" content="http://yoursite.com/images/cursor_2.png">
+<meta property="og:updated_time" content="2016-05-12T07:11:25.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Loader解析">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;在Android日常开发中，时常会请求数据到Cursor，然后再通过Cursor获取数据。像SQLiteDatabase和ContentProvider都使用了Cursor。在这些应用中，往往希望当数据发生改变时，Cursor也会自动的更新数据。这篇文章，我就会向你阐述如何通过Android自身的API实现Cursor的自动更新。">
+<meta name="twitter:image" content="http://yoursite.com/images/cursor_1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="耗子" type="application/atom+xml">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <nav id="upper-nav" class="inner">
+      <a id="main-nav-toggle" class="nav-icon"></a>
+      <div class="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        
+          <a id="nav-github" class="nav-icon" href="https://github.com/myname"></a>
+        
+      </div>
+    </nav>
+    <div id="header-title">
+      
+        <h1 id="blog-title-wrap">
+          <a href="/" id="blog-title">耗子の博客</a>
+        </h1>
+      
+    </div>
+    <div id="contenedor">
+      <ul class="cube">
+        <li class="cara">MyLogo</li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+      </ul>
+    </div>
+    <nav id="main-nav">
+      
+        <a class="main-nav-link" href="/">Home</a>
+      
+        <a class="main-nav-link" href="/archives">Archives</a>
+      
+        <a class="main-nav-link" href="/about">About</a>
+      
+      <a class="main-nav-link st-search-show-outputs">Search</a>
+    </nav>
+  </div>
+</header>
+
+    <div class="outer">
+      <section id="main"><article id="post-android-CursorLoader" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <h3 href="/2016/05/09/android-CursorLoader/" class="article-date">
+  <time datetime="2016-05-09T05:31:04.000Z" itemprop="datePublished">2016-05-09</time>
+</h3>
+    
+  </div>
+  <div class="article-inner">
+  <div class="curve-down">
+  <div class="fill-content">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android Loader解析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        <p>&emsp;&emsp;在Android日常开发中，时常会请求数据到Cursor，然后再通过Cursor获取数据。像SQLiteDatabase和ContentProvider都使用了Cursor。在这些应用中，往往希望当数据发生改变时，Cursor也会自动的更新数据。这篇文章，我就会向你阐述如何通过Android自身的API实现Cursor的自动更新。 </p>
+<a id="more"></a> 
+<h2 id="1-Cursor使用步骤"><a href="#1-Cursor使用步骤" class="headerlink" title="1.Cursor使用步骤"></a>1.Cursor使用步骤</h2><ol>
+<li>在activity或fragment中getLoaderManager()</li>
+<li>oncreate中调用initLoader(id, null, LoaderManager.Callbacks);</li>
+</ol>
+<p><em>LoaderManager Callbacks有如下方法</em></p>
+<p><strong>onCreateLoader() </strong>— 创建loader（可以为android提供的cursorLoader或者自己继承AsyncLoader）,供loadmanager管理。</p>
+<p><strong>onLoadFinished()</strong> — 每次数据加载完时回调（包括数据源更改时loader监听变化时加载）。</p>
+<p><strong>onLoaderReset()</strong>— loader被重置时（不再使用）时回调。</p>
+<h2 id="2-Cursor使用原理"><a href="#2-Cursor使用原理" class="headerlink" title="2.Cursor使用原理"></a>2.Cursor使用原理</h2><p>Android的Cursor自动更新是通过<strong>观察者</strong>模式实现的。</p>
+<p><img src="/images/cursor_1.png" alt="Cursor使用原理"></p>
+<ol>
+<li>通过ContentPorvider和ContentResolver使得数据发生了改变。</li>
+<li>ContentProvider通知Cursor的观察者数据发生了改变。</li>
+<li>Cursor通知CursorLoader的观察者数据发生了改变。</li>
+<li>CursorLoader通过ContentProvider加载新的数据。</li>
+<li>ContentPovider向DataBase请求新的数据。</li>
+<li>CursorLoader调用CursorAdapter#changeCursor,用封装了新数据的Cursor替换旧的Cursor。</li>
+<li>CursorAdapter告知AdapterView的观察者有新的数据。</li>
+<li>AdapterView重新加载并显示数据。</li>
+</ol>
+<p>在Android的android.database包下，有一个ContentObserver。Android正是通过他来实现观察者模式的。当数据改变之后，观察者会将数据改变的消息通知相应的对象，进而做出反馈。在代码中，当数据改变之后，我会调用ContentResolver#notifyChange，发出ContactContract.SYNC_SIGNAL_URI信号，通知数据发生了改变。而在此之前，从ContentProvider#query中获得的Cursor已经通过Cursor#setNotificationUri对ContactContract.SYNC_SIGNAL_URI信号进行了监视。当该信号出现，Cursor就会将信息改变的消息告诉CursorLoader的观察者（在此之前CursorLoader已经对该Cursor设立了观察者）。CursorLoader会开始重新开始加载数据。当数据加载成功，CursorLoader会通过CursorAdapter#changeCursor设置封装了新数据的Cursor。而后CursorAdapter又会通知AdapterView的观察者数据发生了改变（在此之前AdapterView已经对CursorAdapter设立了观察者）。最后AdapterView就会重新加载并显示新的数据。</p>
+<p><img src="/images/cursor_2.png" alt="Cursor使用原理"></p>
+<p>在整个过程当中，我要做的就是在改变数据时发出信号，对封装数据的Cursor设置需要监视的信号。具体的说就是在query中调用Cursor#setNotificationUri，在insert、update、delete中调用ContentResolver#notifyChange。这里需要补充的是Cursor和ContentResolver的信号机制同样是通过观察者模式实现的。</p>
+<h2 id="3-使用代码"><a href="#3-使用代码" class="headerlink" title="3.使用代码"></a>3.使用代码</h2><p>将所有的数据都放在数据库中，并且集合contentprovider使用。</p>
+<p><strong>实体类</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public class Person &#123;</span><br><span class="line"></span><br><span class="line">    private int id;</span><br><span class="line">    private String name;</span><br><span class="line">    private String age;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对应的数据库biao名 以及列名</span><br><span class="line">     */</span><br><span class="line">    public static final String TABLE_NAME=<span class="string">"tb_person"</span>;</span><br><span class="line">    public static final String COLUMN_NAME = <span class="string">"name"</span>;</span><br><span class="line">    public static final String COLUMN_AGE = <span class="string">"age"</span>;</span><br><span class="line"></span><br><span class="line">    public int <span class="function"><span class="title">getId</span></span>() &#123;</span><br><span class="line">        <span class="built_in">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void <span class="built_in">set</span>Id(int id) &#123;</span><br><span class="line">        this.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String <span class="function"><span class="title">getName</span></span>() &#123;</span><br><span class="line">        <span class="built_in">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void <span class="built_in">set</span>Name(String name) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String <span class="function"><span class="title">getAge</span></span>() &#123;</span><br><span class="line">        <span class="built_in">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void <span class="built_in">set</span>Age(String age) &#123;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>DBopenhelper类，只创建了一张数据表</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public class PersonDbOpenHelper extends SQLiteOpenHelper &#123;</span><br><span class="line"></span><br><span class="line">    private static final String DB_NAME= <span class="string">"person.db"</span>;</span><br><span class="line">    private static final int DB_VERSION= 1;</span><br><span class="line"></span><br><span class="line">    private static PersonDbOpenHelper mHelper;</span><br><span class="line"></span><br><span class="line">    public static PersonDbOpenHelper getInstance(Context context)&#123;</span><br><span class="line">        <span class="keyword">if</span> (mHelper==null)&#123;</span><br><span class="line">            synchronized (PersonDbOpenHelper.class)&#123;</span><br><span class="line">                <span class="keyword">if</span> (mHelper==null)&#123;</span><br><span class="line">                    mHelper = new PersonDbOpenHelper(context);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">return</span> mHelper;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private PersonDbOpenHelper(Context context) &#123;</span><br><span class="line">        super(context.getApplicationContext(),DB_NAME, null, DB_VERSION);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onCreate(SQLiteDatabase db) &#123;</span><br><span class="line"></span><br><span class="line">        String sql = <span class="string">"create table "</span> + Person.TABLE_NAME +<span class="string">" ("</span>+</span><br><span class="line">                <span class="string">" _id integer primary key autoincrement , "</span>+</span><br><span class="line">                Person.COLUMN_NAME + <span class="string">" text, "</span>+</span><br><span class="line">                Person.COLUMN_AGE +<span class="string">" text "</span>+</span><br><span class="line">                <span class="string">")"</span>;</span><br><span class="line">        db.execSQL(sql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>provider类</strong>实现了数据库的插入和查询操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">public class PersonProvider extends ContentProvider &#123;</span><br><span class="line">    private static final String AUTHORITY = &quot;com.gl.person.provider.personprovider&quot;;</span><br><span class="line">    public static final Uri URI_PERSOM_ALL = Uri.parse(&quot;content://&quot;+AUTHORITY+&quot;/person&quot;);</span><br><span class="line"></span><br><span class="line">    private static UriMatcher matcher;</span><br><span class="line"></span><br><span class="line">    private static final int PERSON_ALL = 0;</span><br><span class="line">    private static final int PERSON_ONE = 1;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        matcher = new UriMatcher(UriMatcher.NO_MATCH);</span><br><span class="line">        matcher.addURI(AUTHORITY,&quot;person&quot;,PERSON_ALL);</span><br><span class="line">        matcher.addURI(AUTHORITY,&quot;person/#&quot;,PERSON_ONE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private PersonDbOpenHelper mHelper;</span><br><span class="line">    private SQLiteDatabase mDb;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean onCreate() &#123;</span><br><span class="line"></span><br><span class="line">        mHelper = PersonDbOpenHelper.getInstance(getContext());</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) &#123;</span><br><span class="line">        int match = matcher.match(uri);</span><br><span class="line">        switch (match)&#123;</span><br><span class="line">            case PERSON_ALL:</span><br><span class="line"></span><br><span class="line">                break;</span><br><span class="line">            case PERSON_ONE:</span><br><span class="line">                long id = ContentUris.parseId(uri);</span><br><span class="line">                selection=&quot;_id = ?&quot;;</span><br><span class="line">                selectionArgs = new String[]&#123;String.valueOf(id)&#125;;</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                throw new IllegalArgumentException(&quot;Wrong Uri:&quot;+uri);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        mDb = mHelper.getReadableDatabase();</span><br><span class="line">        Cursor c= mDb.query(Person.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);</span><br><span class="line">        ***c.setnotificationuri(getcontext().getcontentresolver(),uri_persom_all);***</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getType(Uri uri) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Uri insert(Uri uri, ContentValues values) &#123;</span><br><span class="line"></span><br><span class="line">        int match = matcher.match(uri);</span><br><span class="line">        if (match!=PERSON_ALL)&#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Wrong Uri:&quot;+uri);</span><br><span class="line">        &#125;</span><br><span class="line">        mDb = mHelper.getReadableDatabase();</span><br><span class="line">        long rowId = mDb.insert(Person.TABLE_NAME,null,values);</span><br><span class="line">        if (rowId&gt;0)&#123;</span><br><span class="line">           ** notifyDataSetChanged();**</span><br><span class="line">            return ContentUris.withAppendedId(uri,rowId);</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    **private void notifyDataSetChanged() &#123;</span><br><span class="line">        getContext().getContentResolver().notifyChange(URI_PERSOM_ALL,null);</span><br><span class="line">    &#125;**</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public int delete(Uri uri, String selection, String[] selectionArgs) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Loader</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">private void <span class="function"><span class="title">initLoader</span></span>() &#123;</span><br><span class="line">        getLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks&lt;Cursor&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public Loader&lt;Cursor&gt; onCreateLoader(int id, Bundle args) &#123;</span><br><span class="line">                CursorLoader loader = new CursorLoader(MainActivity.this,PersonProvider.URI_PERSOM_ALL,null,null,null,null);</span><br><span class="line">                <span class="built_in">return</span> loader;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void onLoadFinished(Loader&lt;Cursor&gt; loader, Cursor data) &#123;</span><br><span class="line"></span><br><span class="line">                mAdapter.swapCursor(data);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void onLoaderReset(Loader&lt;Cursor&gt; loader) &#123;</span><br><span class="line">                mAdapter.swapCursor(null);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这个swapCursor方法是将要用的新的游标替换就得，说白了就是游标下移(个人理解)，并且通知数据变化。</p>
+<p><strong>Adapter</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class PersonAdapter extends CursorAdapter &#123;</span><br><span class="line"></span><br><span class="line">    public PersonAdapter(Context context, Cursor c, boolean autoRequery) &#123;</span><br><span class="line">        super(context, c, autoRequery);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //返回布局</span><br><span class="line">    @Override</span><br><span class="line">    public View newView(Context context, Cursor cursor, ViewGroup parent) &#123;</span><br><span class="line">        View view = LayoutInflater.from(context).inflate(R.layout.list_item,parent,<span class="literal">false</span>);</span><br><span class="line">        <span class="built_in">return</span> view;</span><br><span class="line">    &#125;</span><br><span class="line">    //给view绑定数据</span><br><span class="line">    @Override</span><br><span class="line">    public void <span class="built_in">bind</span>View(View view, Context context, Cursor cursor) &#123;</span><br><span class="line">        TextView tv_name = (TextView) view.findViewById(R.id.person_name);</span><br><span class="line">        TextView tv_age = (TextView) view.findViewById(R.id.person_age);</span><br><span class="line"></span><br><span class="line">        tv_name.setText(<span class="string">"姓名："</span>+cursor.getString(cursor.getColumnIndex(Person.COLUMN_NAME)));</span><br><span class="line">        tv_age.setText(<span class="string">"年龄："</span>+cursor.getString(cursor.getColumnIndex(Person.COLUMN_AGE)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只需重写2个方法，newView，返回子view，bindView，绑定数据。 </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <div class="article-footer-content">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a></li></ul>
+
+        <a data-url="http://yoursite.com/2016/05/09/android-CursorLoader/" data-id="cio40p41e0001i4tr6559legi" class="article-share-link">Share</a>
+        
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/11/android-oom/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android OOM解析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/03/android-scroller/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Scroller</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+<section id="comments">
+    <!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="post-android-CursorLoader" data-title="Android Loader解析" data-url="http://yoursite.com/2016/05/09/android-CursorLoader/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"lewisliul"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</section>
+
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/12/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/androidstudio/">androidstudio神器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/android-oom/">Android OOM解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/09/android-CursorLoader/">Android Loader解析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-optimization-oom/">android_optimization_oom</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-tool-as/">android_tool_as</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 lewisliul<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+  <a href="#search" class="mobile-nav-link st-search-show-outputs">Search</a>
+</nav>
+  <!-- totop start -->
+<div id="totop">
+	<a title="To Top"></a>
+</div>
+<!-- totop end -->
+<!-- swiftype search start -->
+
+<!-- swiftype search end -->
+
+
+<!-- duoshuo start -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"lewisliul"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- duoshuo end -->
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="//cdn.bootcss.com/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+</div>
+</body>
+</html>

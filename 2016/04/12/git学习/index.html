@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
+  <title>Git基础学习(1) | 耗子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&amp;emsp;&amp;emsp;团队开发中，遵循一个合理、清晰的Git使用流程，是非常重要的。否则，每个人都提交一堆杂乱无章的commit，项目很快就会变得难以协调和维护。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git基础学习(1)">
+<meta property="og:url" content="http://yoursite.com/2016/04/12/git学习/index.html">
+<meta property="og:site_name" content="耗子">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;团队开发中，遵循一个合理、清晰的Git使用流程，是非常重要的。否则，每个人都提交一堆杂乱无章的commit，项目很快就会变得难以协调和维护。">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/ea23bca3gw1f2ymmf06cwj20nu0663zv.jpg">
+<meta property="og:image" content="http://yoursite.com/images/log.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.4.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.5.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.5.2.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.5.3.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.5.4.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.5.5.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.6.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.6.2.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.6.3.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.6.4.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.6.5.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.7.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.8.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_1.9.1.png">
+<meta property="og:image" content="http://yoursite.com/images/git_2.2.1.png">
+<meta property="og:updated_time" content="2016-05-12T07:11:25.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git基础学习(1)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;团队开发中，遵循一个合理、清晰的Git使用流程，是非常重要的。否则，每个人都提交一堆杂乱无章的commit，项目很快就会变得难以协调和维护。">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/large/ea23bca3gw1f2ymmf06cwj20nu0663zv.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="耗子" type="application/atom+xml">
+  
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <nav id="upper-nav" class="inner">
+      <a id="main-nav-toggle" class="nav-icon"></a>
+      <div class="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        
+          <a id="nav-github" class="nav-icon" href="https://github.com/myname"></a>
+        
+      </div>
+    </nav>
+    <div id="header-title">
+      
+        <h1 id="blog-title-wrap">
+          <a href="/" id="blog-title">耗子の博客</a>
+        </h1>
+      
+    </div>
+    <div id="contenedor">
+      <ul class="cube">
+        <li class="cara">MyLogo</li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+        <li class="cara"></li>
+      </ul>
+    </div>
+    <nav id="main-nav">
+      
+        <a class="main-nav-link" href="/">Home</a>
+      
+        <a class="main-nav-link" href="/archives">Archives</a>
+      
+        <a class="main-nav-link" href="/about">About</a>
+      
+      <a class="main-nav-link st-search-show-outputs">Search</a>
+    </nav>
+  </div>
+</header>
+
+    <div class="outer">
+      <section id="main"><article id="post-git学习" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <h3 href="/2016/04/12/git学习/" class="article-date">
+  <time datetime="2016-04-12T04:45:58.000Z" itemprop="datePublished">2016-04-12</time>
+</h3>
+    
+  </div>
+  <div class="article-inner">
+  <div class="curve-down">
+  <div class="fill-content">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Git基础学习(1)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        <p>&emsp;&emsp;团队开发中，遵循一个合理、清晰的Git使用流程，是非常重要的。否则，每个人都提交一堆杂乱无章的commit，项目很快就会变得难以协调和维护。<br><a id="more"></a></p>
+<h1 id="git基础学习教程"><a href="#git基础学习教程" class="headerlink" title="git基础学习教程"></a>git基础学习教程</h1><h2 id="1-git"><a href="#1-git" class="headerlink" title="1.git"></a>1.git</h2><h3 id="1-1设置开发者的个人信息"><a href="#1-1设置开发者的个人信息" class="headerlink" title="1.1设置开发者的个人信息"></a>1.1设置开发者的个人信息</h3><p><strong>范例：</strong>配置全局用户及email地址.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config –global user.name “name”</span><br><span class="line">git config –global user.email “1234@qq.com”</span><br></pre></td></tr></table></figure>
+<h3 id="1-2创建仓库信息"><a href="#1-2创建仓库信息" class="headerlink" title="1.2创建仓库信息"></a>1.2创建仓库信息</h3><p>如果要开发项目，必须先创建一个仓库（可以理解为一个文件夹）。</p>
+<p><strong>范例：</strong>创建文件夹（d:\mypro）.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">d:</span><br><span class="line">md mypro</span><br></pre></td></tr></table></figure>
+<p><strong>范例：</strong>将mypro文件夹定义为仓库.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> mypro</span><br><span class="line">git init     初始化仓库（将此目录变为Git可以管理的仓库）</span><br></pre></td></tr></table></figure>
+<h3 id="1-3添加文件"><a href="#1-3添加文件" class="headerlink" title="1.3添加文件"></a>1.3添加文件</h3><p>所有文件一定要使用utf-8编码，否则会出现问题，不要使用window自带的notepad工具。<br>建立一个hello.java文件,文件保存在mypro目录下，属于git管理的仓库。<br><strong>范例：</strong>创建文件夹（d:\mypro）.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status    查看当前仓库的状态</span><br></pre></td></tr></table></figure>
+<p><img src="http://ww2.sinaimg.cn/large/ea23bca3gw1f2ymmf06cwj20nu0663zv.jpg" alt="结果图"><br>在状态查询操作上的几个提示信息：</p>
+<ul>
+<li>现在的开发属于主分支：on branch master;</li>
+<li>初始化仓库的提交：Initial commit;</li>
+<li>未标记的文件：untracked files</li>
+<li>随后给出一些操作命令：（use ：git add<file>……）</file></li>
+<li>未标记文件的列表，现在只有一个：hello.java</li>
+</ul>
+<p><strong>范例：</strong>将文件家加入到暂存区中.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add hello.java</span><br></pre></td></tr></table></figure>
+<p><strong>范例：</strong>提交文件信息.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit –m “注释信息”</span><br></pre></td></tr></table></figure>
+<p>此时这个文件就被真正的提交到了主分支上，也就是意味着程序发布成功了。<br><strong>注意：</strong>所有的修改代码都会被git自动检测到，所有的代码在使用commit提交之前一定要使用add添加进来，否则不会有任何的提交。如果不想两部进行可以增加一个参数。（git commit –a –m “注释”）等于上面2步。</p>
+<p><strong>范例：</strong>查看日志.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span>  查看日志记录的时候如果到底了，请按下字母”q”就表示可以退出了</span><br></pre></td></tr></table></figure>
+<p><img src="/images/log.png" alt="结果图"><br>出现一个提交的信息号“commit ID”</p>
+<h3 id="1-4修改仓库文件"><a href="#1-4修改仓库文件" class="headerlink" title="1.4修改仓库文件"></a>1.4修改仓库文件</h3><p>代码的出现就是为了修改，现在来观察git如何控制修改,修改了heoll.java文件,此时增加修改后，可以查看当前状态,git status 提示信息：</p>
+<p><img src="/images/git_1.4.1.png" alt="结果图">   </p>
+<ul>
+<li>git在主分支上  </li>
+<li>git没有保存文件到暂存区中  </li>
+<li>可以提交文件，也可以直接进行文件恢复</li>
+</ul>
+<p><strong>范例：</strong>查看文件的区别.  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff hello.java</span><br></pre></td></tr></table></figure>
+<p>发现所有添加的内容都带有加号“+”，而被删除的信息都会使用减号“-“。然后就可以将修改的代码进行add和commit。   </p>
+<h3 id="1-5工作区和暂存区"><a href="#1-5工作区和暂存区" class="headerlink" title="1.5工作区和暂存区"></a>1.5工作区和暂存区</h3><p><strong>工作区：</strong>就是指当前电脑的操作目录。</p>
+<p><strong>仓库：</strong>工作区有一个.git文件，这个不算工作区，而是git的仓库版本库。git版本库里面主要的东西有很多，主要包括叫stage的存储区以及为用户自动创建的主程序分支master，以及只想master的HEAD指针.</p>
+<p><img src="/images/git_1.5.1.png" alt="结果图">   </p>
+<ul>
+<li>在之前编写的hello.java文件是保存在用户的工作区中的。</li>
+<li>当使用add命令后，实际上就是将所有修改文件提交到了暂存区（stage）中。</li>
+<li>使用commit命令之后，才表示真正的发出了修改，而真正可以运行的查询都保存在master分支。</li>
+</ul>
+<h4 id="1-5-1工作区的操作"><a href="#1-5-1工作区的操作" class="headerlink" title="1.5.1工作区的操作"></a>1.5.1工作区的操作</h4><p>修改hello.java文件，添加一个新文件Demo.java，现在工作区中的代码已经发生了变化。可以使用status进行查看。</p>
+<p><img src="/images/git_1.5.2.png" alt="结果图">  </p>
+<p>提示如下:</p>
+<ul>
+<li>修改了hello.java文件，而这个文件给出了处理方式。</li>
+<li>出现了一个未被标记的demo.java文件，询问用户是否将其加入到暂存区之中。</li>
+</ul>
+<h4 id="1-5-2暂存区的操作"><a href="#1-5-2暂存区的操作" class="headerlink" title="1.5.2暂存区的操作"></a>1.5.2暂存区的操作</h4><p>接着按照提示可以将文件加入到暂存区。</p>
+<p><strong>范例：</strong>添加到暂存区.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<p>本次操作使用了一个“.”,那么就表示全部加入。</p>
+<p><img src="/images/git_1.5.3.png" alt="结果图">  </p>
+<p><img src="/images/git_1.5.4.png" alt="结果图"> </p>
+<h4 id="1-5-3提交修改"><a href="#1-5-3提交修改" class="headerlink" title="1.5.3提交修改"></a>1.5.3提交修改</h4><p>数据保存在暂存区之后，下面就要进行代码的提交，将代码提交到主分支上。</p>
+<p><img src="/images/git_1.5.5.png" alt="结果图"></p>
+<p>当把暂存区的代码提交到主分支后，会自动的清空暂存区的内容。</p>
+<h3 id="1-6版本回退"><a href="#1-6版本回退" class="headerlink" title="1.6版本回退"></a>1.6版本回退</h3><p>每当用户进行代码提交的时候都会自动的生成一个commit ID，而这个commit ID就是进行代码回退的主要操作方式。</p>
+<p><strong>范例：</strong>查看当前修改的日志信息.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_1.6.1.png" alt="结果图">   </p>
+<p>大家发现所有的id并不是顺序的1，2，3编号，而是由系统生成一个十六进制数据，这一概念就跟session id类似，有git自己控制，主要是为了防止版本号的冲突。每当用户将自己的代码提交到版本库之后都会自动的生成一个commit记录进行操作保存，每一条记录都会自动生成一个commit id进行唯一标识。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=oneline    （id一行显示）</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_1.6.2.png" alt="结果图">  </p>
+<p>在master分支上有一个head指针存在，而这个指针默认情况下永远指向最后一次提交的位置。</p>
+<p><img src="/images/git_1.6.3.png" alt="结果图"> </p>
+<p>当使用回退之后发现HEAD指针出现了改变，如果回退一步，那么之前的操作不会被删除，但是所有的代码会回归到指定位置的状态。</p>
+<p><img src="/images/git_1.6.4.png" alt="结果图"> </p>
+<p><strong>范例：</strong>回退一步.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD~1</span><br></pre></td></tr></table></figure>
+<p><img src="/images/git_1.6.5.png" alt="结果图"> </p>
+<p>此时已经回退到上一次提交的状态，那么如果现在还想恢复最新的状态呢？那就必须找到上面回退的commit id。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard fe27af74      (commit id上图可以看到)</span><br></pre></td></tr></table></figure>
+<p>此时代码就恢复到了新的状态，也就是说利用这些id就可以方便的进行代码的历史穿梭了。</p>
+<h3 id="1-7文件修改问题"><a href="#1-7文件修改问题" class="headerlink" title="1.7文件修改问题"></a>1.7文件修改问题</h3><p>在有了暂存区和master主分支概念之后，就需要回避一个问题，只有保存在暂存区中的内容才能够真正的修改，而不是针对文件。</p>
+<p><img src="/images/git_1.7.1.png" alt="结果图">   </p>
+<p>git add将文件增加到暂存区中，此时并没有提交。<br>git commit进行提交，只是提交暂存区中的内容。</p>
+<p><strong>总结：</strong>如果一个文件修改多次，那么就需要执行多次的add后才可以提交，否则在add前的修改是不会被提交的。</p>
+<h3 id="1-8撤销修改"><a href="#1-8撤销修改" class="headerlink" title="1.8撤销修改"></a>1.8撤销修改</h3><p>修改完后还是可以进行撤销的，发现错了，所以不想改，回到原来的状态。具体分为2种情况:</p>
+<p><img src="/images/git_1.8.1.png" alt="结果图">   </p>
+<h4 id="1-8-1情况一：未增加（git-add）且未提交（git-commit）"><a href="#1-8-1情况一：未增加（git-add）且未提交（git-commit）" class="headerlink" title="1.8.1情况一：未增加（git add）且未提交（git commit）"></a>1.8.1情况一：未增加（git add）且未提交（git commit）</h4><p>如果在工作区中的代码并没有添加到暂存区中，也就是并没git add的时候是比较好恢复到原始的状态。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -- hello.java</span><br></pre></td></tr></table></figure>
+<p>执行上面代码发现hello.java文件就恢复到一个原始的状态（上一次改之前）。</p>
+<h4 id="1-8-2情况二：已增加（git-add）且未提交（git-commit）"><a href="#1-8-2情况二：已增加（git-add）且未提交（git-commit）" class="headerlink" title="1.8.2情况二：已增加（git add）且未提交（git commit）"></a>1.8.2情况二：已增加（git add）且未提交（git commit）</h4><p>如果在工作区中的代码已经添加到暂存区中，也就是git add添加进去了，但是此时并没有git commit，并没有提交的时候，此时需要根据HEAD指针来恢复文件。  </p>
+<p><strong>范例：</strong>从暂存区中退出.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset HEAD hello.java</span><br></pre></td></tr></table></figure>
+<p>相当于现在已经由暂存区中保存的内容恢复到了工作区，那么就可以在使用上述第一种情况去直接恢复到原始状态。</p>
+<h3 id="1-9删除文件"><a href="#1-9删除文件" class="headerlink" title="1.9删除文件"></a>1.9删除文件</h3><p>现在在仓库中存在demo.java文件，但是假设这个文件从此不在使用呢，那如何删除呢，在git里面对于删除的这一个功能来说也属于一个修改操作。</p>
+<p><strong>范例：</strong>从磁盘中删除.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">del Demo.java</span><br></pre></td></tr></table></figure>
+<p>接着可以查看状态。</p>
+<p><img src="/images/git_1.9.1.png" alt="结果图">   </p>
+<p>这个时候文件是从当前的工作区的磁盘中删除了，同时也提示文件被删除，接着可以提交更新。</p>
+<p><strong>范例：</strong>提交文件.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit <span class="_">-a</span> -m <span class="string">"delete file"</span></span><br></pre></td></tr></table></figure>
+<p>但是如果删除错误呢？那么应该进行恢复。</p>
+<p><strong>范例：</strong>恢复文件.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard (commit id)</span><br></pre></td></tr></table></figure>
+<p><strong>总结：</strong>以上所有的操作都只是针对于本地仓库的改善，但是这些命令不管是本地还是远程操作都是可以使用的，同时一定要掌握GIT的存储结构。</p>
+<h2 id="2-远程仓库（GITHUB）"><a href="#2-远程仓库（GITHUB）" class="headerlink" title="2.远程仓库（GITHUB）"></a>2.远程仓库（GITHUB）</h2><p>首先注册github账号。了解github的使用。 </p>
+<h3 id="2-1SSH-key"><a href="#2-1SSH-key" class="headerlink" title="2.1SSH key"></a>2.1SSH key</h3><p>对于github中的两种链接使用前需要生成一个SSH key后才可以使用。</p>
+<p>1.生成一个SSH key，在window平台下可以直接使用“git bash”工具创建。需要生成一个RSA编码的KEY。  </p>
+<p>2.执行：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.ssh</span><br></pre></td></tr></table></figure>
+<p>如果返回“… No such file or directory”，说明没有生成过SSH Key，</p>
+<p>3.生成新的Key：（引号内的内容替换为你自己的邮箱）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your_email@youremail.com"</span></span><br></pre></td></tr></table></figure>
+<p>输出显示：Generating public/private rsa key pair. Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):直接回车，不要修改默认路劲。<br>Enter passphrase (empty for no passphrase): Enter same passphrase again:<br>设置一个密码短语，在每次远程操作之前会要求输入密码短语！闲麻烦可以直接回车，不设置。</p>
+<p>4.成功后提公鑰:找到.ssh文件夹，用文本编辑器打开“id_rsa.pub”文件，复制内容到剪贴板。打开 <a href="https://github.com/settings/ssh" target="_blank" rel="external">https://github.com/settings/ssh</a> ，点击 Add SSH Key 按钮，粘贴进去保存即可。</p>
+<h3 id="2-2添加远程仓库"><a href="#2-2添加远程仓库" class="headerlink" title="2.2添加远程仓库"></a>2.2添加远程仓库</h3><ul>
+<li>把github与本地仓库关联</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin http://github.com/my/a.git  (远程仓库地址)</span><br></pre></td></tr></table></figure>
+<p>此时已经和远程仓库建立了链接，但是远程仓库里面并没有本地仓库的内容。</p>
+<ul>
+<li>推送到github</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>由于选择远程仓库里面并没有任何文件存在，所以进行本地文件推送，但是由于是第一次推送的为master分支，那么使用了一个“-u”的参数将远程的master和本地的master进行关联。</p>
+<ul>
+<li>切换仓库</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote <span class="built_in">set</span>-url (name path)</span><br></pre></td></tr></table></figure>
+<p>还可以切换远程其它的仓库，需要仓库名以及路径。</p>
+<ul>
+<li>查看现在远程服务器已经存在的仓库信息：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+<p>查看远程仓库</p>
+<ul>
+<li>删除仓库</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote rm a</span><br></pre></td></tr></table></figure>
+<p>删除远程仓库a。</p>
+<ul>
+<li>此时，再修改hello.java文件，接着提交到服务器</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit <span class="_">-a</span> -m <span class="string">"修改后提交"</span></span><br></pre></td></tr></table></figure>
+<p>这个时候只是将其添加到本地的master分支上，没有到远程分支上面去，需要按照上面的步骤推送到服务器。</p>
+<p><img src="/images/git_2.2.1.png" alt="结果图"> </p>
+<p>那么此时就完成了本地代码与服务器代码的同步。</p>
+<h3 id="2-3克隆远程仓库"><a href="#2-3克隆远程仓库" class="headerlink" title="2.3克隆远程仓库"></a>2.3克隆远程仓库</h3><p>之前讲解的实际上是先有本地仓库，而后将本地仓库提交到远程仓库上进行管理，但这是一个错误的做法，应该是先有远程仓库，而后在根据远程仓库克隆出一个新的仓库来。</p>
+<ul>
+<li>在github上创建一个仓库：a</li>
+<li>在本地磁盘上进行仓库的克隆操作</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/my/a.git</span><br></pre></td></tr></table></figure>
+<p>同理可以克隆其他开源的项目。</p>
+<p>接下来的分支管理大家可以看下一节<br><a href="http://lewisliul.github.io/2016/04/16/git%E5%AD%A6%E4%B9%A02/" target="_blank" rel="external">http://lewisliul.github.io/2016/04/16/git%E5%AD%A6%E4%B9%A02/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <div class="article-footer-content">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
+
+        <a data-url="http://yoursite.com/2016/04/12/git学习/" data-id="cio40p41t0006i4trih1v8ls0" class="article-share-link">Share</a>
+        
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/15/hexo博客创建/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hexo博客创建
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+
+<section id="comments">
+    <!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="post-git学习" data-title="Git基础学习(1)" data-url="http://yoursite.com/2016/04/12/git学习/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"lewisliul"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</section>
+
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/12/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/androidstudio/">androidstudio神器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/android-oom/">Android OOM解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/09/android-CursorLoader/">Android Loader解析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-data-cursorloader/">android_data_cursorloader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-optimization-oom/">android_optimization_oom</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-resource-attr/">android_resource_attr</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-tool-as/">android_tool_as</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ui-scroller/">android_ui_scroller</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 lewisliul<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/sun11/hexo-theme-paperbox" target="_blank">Paperbox</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+  <a href="#search" class="mobile-nav-link st-search-show-outputs">Search</a>
+</nav>
+  <!-- totop start -->
+<div id="totop">
+	<a title="To Top"></a>
+</div>
+<!-- totop end -->
+<!-- swiftype search start -->
+
+<!-- swiftype search end -->
+
+
+<!-- duoshuo start -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"lewisliul"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- duoshuo end -->
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="//cdn.bootcss.com/lrsjng.jquery-qrcode/0.12.0/jquery.qrcode.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+</div>
+</body>
+</html>
